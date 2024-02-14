@@ -4,13 +4,19 @@ import book.dao.ArticleDao;
 import book.dto.ArticleForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 // 1.스프링 컨테이너(메모리 저장소)에 빈(객체/힙) 등록
 // 2.스프링이 해당 클래스를 사용할수 있다.
@@ -56,6 +62,34 @@ public class ArticleController {
 
         return result ;
     } // m end
+
+    //p.156 조회
+
+    @GetMapping("/articles/{id}")
+    public String show(@PathVariable Long id, Model model){
+        System.out.println("id = " + id);
+        //model.addAttribute("키","값");
+        ArticleForm form = articleDao.show(id);
+        System.out.println("form = " + form);
+
+        model.addAttribute("article",form);
+        model.addAttribute("name","유재석");
+
+        return "articles/show";
+    }
+
+        //전체 조회
+    @GetMapping("/articles")
+    public String index(Model model){
+
+        List<ArticleForm> result = articleDao.index();
+        model.addAttribute("articleList", result);
+
+        return "articles/index";
+
+    }
+
+
 
 }
 /*

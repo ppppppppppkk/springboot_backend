@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component // 스프링 컨테이너에 해당 클래스를 빈(객체) 등록
 public class ArticleDao {
@@ -45,6 +47,49 @@ public class ArticleDao {
     }
 
     // ---------- ---------- ----------//
+
+    //2. 개별 글 조회
+    public ArticleForm show(Long id){
+        try{
+
+            String sql = "select * from article where id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setLong(1,id);
+
+            rs  = ps.executeQuery();
+            if( rs.next() ){
+                ArticleForm form = new ArticleForm(rs.getLong(1),rs.getString(2),rs.getString(3));
+            return form;
+            }
+
+        }catch(Exception e){
+            System.out.println("e = " + e);
+        }
+        return null;
+    }
+
+
+    //------------------------------------------------------
+       // 3. 개별글 조회
+    public List<ArticleForm> index(){
+        List<ArticleForm> list = new ArrayList<>();
+
+        try{
+            String sql = "select * from article";
+            ps = conn.prepareStatement(sql);
+            rs= ps.executeQuery();
+            while (rs.next()){
+
+                ArticleForm form = new ArticleForm(rs.getLong(1),rs.getString(2),rs.getString(3));
+
+                list.add(form);
+            }
+        }catch (Exception e){
+            System.out.println("e = " + e);
+        }
+        return list;
+    }
+
 
 }
 
