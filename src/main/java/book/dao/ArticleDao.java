@@ -4,12 +4,10 @@ import book.dto.ArticleForm;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Component // 스프링 컨테이너에 해당 클래스를 빈(객체) 등록
 public class ArticleDao {
@@ -29,21 +27,37 @@ public class ArticleDao {
     // ---------- ---------- ----------//
     // ---------- SQL 이벤트  ----------//
     // 1. 글쓰기 처리
-    public boolean createArticle( ArticleForm form ){
+    public ArticleForm createArticle( ArticleForm form ){
         System.out.println("ArticleDao.createArticle");
         System.out.println("form = " + form);
+        //1. 세이브 성공시 반환할 Dto
+        ArticleForm saved = new ArticleForm();
 
         try{      // 0. try{}catch (Exception e ){}
             String sql ="insert into article( title , content ) values( ? , ? )"; // 1.
-            ps = conn.prepareStatement(sql); // 2.
+
+            //1.SQL 기재 할때 자동으로 생성된 키 호출 선언
+            //2.rs = ps.getGeneratedKeys() 이용한 생성된 키 반환
+            //3.rs.next()  ---> rs.get(1) : 방금 생성된 키 반환
+            ps = conn.prepareStatement(sql , Statement.RETURN_GENERATED_KEYS); // 2.
             ps.setString( 1 , form.getTitle() ); // 3.
             ps.setString( 2 , form.getContent() );
             // 4.
             int count = ps.executeUpdate();
+
+            rs = ps.getGeneratedKeys();
+            if( rs.next() ){
+                System.out.println("방금 생성된 pk (id)"+rs.getLong(1));
+                Long id = rs.getLong(1);
+               saved.setId(id);
+               saved.setTitle(form.getTitle() );
+               saved.setContent(form.getContent());
+                return saved;
+            }
             // 5.
-            if( count == 1 ) return true;
+            // if( count == 1 ) return ;
         }catch (Exception e ){  System.out.println(e);  }
-        return false;
+        return saved;
     }
 
     // ---------- ---------- ----------//
@@ -70,7 +84,7 @@ public class ArticleDao {
 
 
     //------------------------------------------------------
-       // 3. 개별글 조회
+       // 3. 모든글 조회
     public List<ArticleForm> index(){
         List<ArticleForm> list = new ArrayList<>();
 
@@ -89,7 +103,59 @@ public class ArticleDao {
         }
         return list;
     }
+    //--------------------------------------------------------
+    // 4. id 해당하는 게시물 정보 호출 , 매개변수 :id , 리턴 : dto 수정 1단계
+    public ArticleForm findById(Long id){
+        try{
+            String sql = "select * from article where id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setLong(1,id);
+            rs = ps.executeQuery();
+            if(rs.next()){
+                return new ArticleForm(
+                    rs.getLong(1),
+                    rs.getString(2),
+                    rs.getString(3)
+                );
 
+            }
+        }catch (Exception e){System.out.println("e = " + e);}
+        return null;
+    }
+    //-------------------------------------------
+    //5. 해당 id 수정 처리 수정 2단계
+    public ArticleForm update(ArticleForm form){
+        try {
+            String sql = "update article set title = ?, content = ? where id = ?";
+
+            ps = conn.prepareStatement(sql);
+            ps.setLong(3,form.getId());
+            ps.setString(1,form.getTitle());
+            ps.setString(2,form.getContent());
+            int count = ps.executeUpdate();
+            if( count == 1){
+                return form;
+            }
+
+        }catch (Exception e){
+            System.out.println("e = " + e);
+        }
+        return null;
+    }
+    //=====================================================
+    //6. 삭제
+    public boolean delete(long id){
+        try {
+            String sql = "delete from article where id = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setLong(1,id);
+            int count = ps.executeUpdate();
+            if(count == 1)return true;
+        }catch (Exception e){
+            System.out.println("e = " + e);
+        }
+        return false;
+    }
 
 }
 

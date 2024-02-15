@@ -9,10 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -37,8 +34,9 @@ public class ArticleController {
         // 1. <form action="/articles/create" method="post">
         // 2. 입력태그 속성의 name과 DTO 필드의 필드명 일치하면 자동 연결/대입 된다.
         // 3. public 생성자 필요
+
     @PostMapping("/articles/create")    // HTTP 요청 경로 : POST방식 : localhost:80/articles/create
-    public boolean createArticle( ArticleForm form ){
+    public String createArticle( ArticleForm form ){
         // soutm : 메소드명 출력
         System.out.println( new Date() );
         System.out.println("ArticleController.createArticle");
@@ -58,9 +56,9 @@ public class ArticleController {
         log.info( form.toString() ); // 자동완성 : 메누 -> 파일 -> 설정 -> 플러그인 -> 마켓플레이스 -> Lombok 설치
 
         // DAO에게 요청하고 응답 받기.
-        boolean result = articleDao.createArticle( form );
+        ArticleForm saved = articleDao.createArticle( form );
 
-        return result ;
+        return "redirect:/articles/"+saved.getId() ;
     } // m end
 
     //p.156 조회
@@ -87,6 +85,48 @@ public class ArticleController {
 
         return "articles/index";
 
+    }
+        //p.202 수정 1단계
+    @GetMapping("/articles/{id}/edit")
+    public String edit(@PathVariable Long id , Model model){
+        System.out.println("id = " + id);
+        //1. DAO에게 요청하고 응답 받기
+        ArticleForm form = articleDao.findById(id);
+        //2. 응답결과 뷰 템플릿에게 보낼 준비 model
+        model.addAttribute("article", form);
+        //3. 뷰 페이지 설정
+
+        return "articles/edit";
+    }
+    //@PathVariable : 요청한HTTP URL 경로상의 매개변수 대입
+        // URL : /articles/{매개변수명}/edit
+
+        //p.214 수정 처리 2단계
+    @PostMapping("/articles/update")
+    public String update(ArticleForm form){
+        // * form 입력 데이터를 Dto 매개변수로 받을때
+            // form 입력상자의 name 과 Dto의 필드명 동일
+            // Dto의 필드 값을 저장할 생성자 필요
+
+        // 2.DAO 에게 요청하고 응답받기
+        ArticleForm updated = articleDao.update(form);
+        // 3. 수정 처리된 상태페이지로 이동
+        return "redirect:/articles/"+updated.getId();
+    }
+
+    //=======================================
+    // 삭제 단계
+    //p.234
+    @GetMapping("/articles/{id}/delete")
+    public String delete(@PathVariable long id){
+        System.out.println("id = " + id);
+        // 1. 삭제할 대상
+        // 2. dao 삭제 요청하고 응답받기
+        boolean result = articleDao.delete(id);
+        //3. 결과 페이지로 리다이렉트 하기
+
+
+        return "redirect:/articles";
     }
 
 
