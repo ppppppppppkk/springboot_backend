@@ -86,6 +86,7 @@ public class ArticleController {
         return "articles/index";
 
     }
+    //---------------------------------------------------------
         //p.202 수정 1단계
     @GetMapping("/articles/{id}/edit")
     public String edit(@PathVariable Long id , Model model){
@@ -100,7 +101,7 @@ public class ArticleController {
     }
     //@PathVariable : 요청한HTTP URL 경로상의 매개변수 대입
         // URL : /articles/{매개변수명}/edit
-
+    //--------------------------------------------------------------
         //p.214 수정 처리 2단계
     @PostMapping("/articles/update")
     public String update(ArticleForm form){
