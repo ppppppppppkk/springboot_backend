@@ -26,21 +26,28 @@ public class MemberDao {
 
     }
 
-//    public boolean doPostsignup( MemberDto memberDto ){
-//        MemberDto saved = new MemberDto();
-//    try {
-//        String sql = "insert into springtest1(id,pw,name,email,phone,img) values(?,?,?,?,?,?)";
-//        ps = conn.prepareStatement(sql);
-//
-//        ps.setString(1,MemberDto.getid);
-//
-//        int count = ps.executeUpdate();
-//
-//    }catch (Exception e){
-//        System.out.println("e = " + e);
-//    }
-//    return false;
-//    }
+    public boolean doPostsignup( MemberDto memberDto ){
+
+    try {
+        String sql = "insert into springtest1(id,pw,name,email,phone,img) values(?,?,?,?,?,?)";
+        ps = conn.prepareStatement(sql);
+
+        ps.setString(1,memberDto.getId());
+        ps.setString(2,memberDto.getPw());
+        ps.setString(3,memberDto.getName());
+        ps.setString(4,memberDto.getEmail());
+        ps.setString(5,memberDto.getPhone());
+        ps.setString(6,memberDto.getImg());
+
+        int count = ps.executeUpdate();
+
+        if(rs.next() ) return true;
+
+    }catch (Exception e){
+        System.out.println("e = " + e);
+    }
+    return false;
+    }
 
 //
 //    //-------------------------------------------------------
