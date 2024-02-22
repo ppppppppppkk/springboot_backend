@@ -68,4 +68,21 @@ public class BoardDao {
             ps.executeUpdate();    return true;
         }catch (Exception e ){  System.out.println("e = " + e);  }return false;
     }
+
+    //5. 게시물 번호에 따른 패스워드 검증
+    public boolean confirmPassword(int bno, String bpassword){
+        try{
+            String sql = "select * from board where bno = ? and bpassword = ?";
+            ps = conn.prepareStatement(sql);
+            ps.setInt( 1 , bno );
+            ps.setString(2,bpassword);
+            rs = ps.executeQuery();
+            if(rs.next()){
+                return true;
+            }
+        }catch (Exception e ){  System.out.println("e = " + e);  }return false;
+    }
+
+
+
 }

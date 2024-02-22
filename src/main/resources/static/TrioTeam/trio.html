@@ -1,0 +1,42 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h3> 인사 페이지</h3>
+
+<table>
+    <thead>
+    <tr>
+        <th> 사원 번호 </th> <th> 사원 이름 </th> <th> 사원 전화번호 </th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr>
+        <th> 1 </th> <th> 강호동 </th> <th> 010-4815-4812 </th>
+        <th>
+            <button onclick="doDelete( ${ result[i].mno }  )" >삭제</button>
+            <button onclick="doUpdate( ${ result[i].mno }  )" >수정</button>
+          <button onclick="dopaypage( ${ result[i].mno })" >급여</button>
+        </th>
+    </tr>
+    </tbody>
+</table>
+
+사원 등록 :     <input id="mname"/> <br/>
+사원 전화번호:   <input id="mphone"/> <br/>
+    <button onclick="doCreate()"> 등록 </button>
+
+
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="/TrioTeam/trio.js"></script>
+
+
+</body>
+</html>
