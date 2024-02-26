@@ -16,7 +16,9 @@ $.ajax({
    data :  info  ,  //입력받은값 보내기
    success : function ( result ){ //통신 응답받은 값
     console.log(result);
-    if(result){alert('로그인 성공');}
+    if(result){alert('로그인 성공');
+        location.href="/"; //로그인 성공 시 메인페이지로
+    }
     else{ alert('로그인 실패');}
     }
 })
